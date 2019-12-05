@@ -9,7 +9,7 @@ GAME RULES:
 
 */
 
-var scores, currentScore, activePlayer;
+var scores, currentScore, activePlayer, isPlayable;
 
 init();
 
@@ -18,30 +18,35 @@ var diceDOM = document.querySelector('.dice');
 diceDOM.style.display = 'none';
 
 document.querySelector('.btn-roll').addEventListener('click', function () {
-    diceDOM.style.display = 'block';
+    if (isPlayable){
+        diceDOM.style.display = 'block';
 
-    var dice = Math.floor(Math.random() * 6) + 1;
-    diceDOM.src = 'dice-' + dice + '.png';
+        var dice = Math.floor(Math.random() * 6) + 1;
+        diceDOM.src = 'dice-' + dice + '.png';
 
-    if(dice !== 1){
-        currentScore += dice;
-        document.getElementById('current-' + activePlayer).textContent = currentScore;
-    } else {
-        nextPlayer();
+        if(dice !== 1){
+            currentScore += dice;
+            document.getElementById('current-' + activePlayer).textContent = currentScore;
+        } else {
+            nextPlayer();
+        }
     }
 });
 
 document.querySelector('.btn-hold').addEventListener('click', function () {
-    scores[activePlayer] += currentScore;
-    document.getElementById('score-' + activePlayer).textContent = scores[activePlayer];
+    if (isPlayable){
+        scores[activePlayer] += currentScore;
+        document.getElementById('score-' + activePlayer).textContent = scores[activePlayer];
 
-    if (scores[activePlayer] >= 10){
-        document.querySelector('#name-' + activePlayer).textContent = 'Winner!';
-        diceDOM.style.display = 'none';
-        document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
-        document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
-    } else {
-        nextPlayer();
+        if (scores[activePlayer] >= 10){
+            isPlayable = false;
+            document.querySelector('#name-' + activePlayer).textContent = 'Winner!';
+            diceDOM.style.display = 'none';
+            document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
+            document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+        } else {
+            nextPlayer();
+        }
     }
 
 });
@@ -49,6 +54,7 @@ document.querySelector('.btn-hold').addEventListener('click', function () {
 document.querySelector('.btn-new').addEventListener('click', init);
 
 function init() {
+    isPlayable = true;
     scores = [0, 0];
     currentScore = 0;
     activePlayer = 0;
